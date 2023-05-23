@@ -1,0 +1,39 @@
+version: "3.7"
+
+services:
+  python:
+    build:
+      context: .
+      dockerfile: ./docker/python/Dockerfile
+    container_name: python
+    command: /bin/sh
+    volumes:
+      - type: bind
+        source: .
+        target: /dicon-seven-crawler
+    environment:
+      STAGE: "dev"
+      AWS_REGION: "ap-northeast-1"
+      AWS_ACCESS_KEY_ID: "dummy"
+      AWS_SECRET_ACCESS_KEY: "dummy"
+      LOCALSTACK_ENDPOINT_URL: "http://localstack:4566"
+    tty: true
+    stdin_open: true
+
+  localstack:
+    build:
+      context: .
+      dockerfile: ./docker/localstack/Dockerfile
+    container_name: localstack
+    ports:
+      - 4566:4566
+    environment:
+      SERVICES: s3
+      AWS_DEFAULT_REGION: ap-northeast-1
+      DATA_DIR: /tmp/localstack/data
+      HOSTNAME_EXTERNAL: localstack
+      AWS_REGION: "ap-northeast-1"
+      AWS_ACCESS_KEY_ID: "dummy"
+      AWS_SECRET_ACCESS_KEY: "dummy"
+    volumes:
+      - ./docker/localstack/:/docker-entrypoint-initaws.d
